@@ -1,0 +1,39 @@
+#include <Arduino.h>
+#include <SoftwareSerial.h>
+#include <LiquidCrystal_I2C.h>
+
+const int tdsSensorPin = A0;
+const float calibrationValue = 1.0;
+
+// Define the LCD parameters
+LiquidCrystal_I2C lcd(0x27, 16, 2);  // I2C address may vary, use the address of your specific LCD
+
+void setup() {
+  Serial.begin(9600);
+
+  pinMode(tdsSensorPin, INPUT);
+
+  // Initialize the LCD
+  lcd.begin(16, 2);
+  lcd.print("TDS Meter");
+  delay(2000);
+  lcd.clear();
+}
+
+void loop() {
+  int analogValue = analogRead(tdsSensorPin);
+  float voltage = analogValue * (5.0 / 1024.0);
+  float tdsValue = voltage * calibrationValue;
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("TDS: ");
+  lcd.print(tdsValue);
+  lcd.print(" ppm");
+
+  Serial.print("TDS Value: ");
+  Serial.print(tdsValue);
+  Serial.println(" ppm");
+
+  delay(1000);
+}
